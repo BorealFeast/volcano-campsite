@@ -1,0 +1,12 @@
+version: '2.1'
+
+services:
+  reservation-postgres13:
+    container_name: reservation-postgres
+    image: postgres:13
+    environment:
+     - POSTGRES_PASSWORD=admin
+    ports:
+     - "5432:5432"
+    networks:
+     - default

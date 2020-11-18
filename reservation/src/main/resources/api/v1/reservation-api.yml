@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: BoealFeast - Campsite Reservation
+  description: |-
+    ## General
+
+    to fill
+  x-codegen-values:
+    apiVersionString: v1
+    apiVersionInt: 1
+    filePath: api/v1/reservation-api.yaml
+paths:
+  "/reservations":
+    post:
+      operationId: user-create-reservation
+      summary: Create reservation
+      description: |-
+        ## General
+
+        Create reservation for the provided period, where `localStartDate` is inclusive and `localEndDate` is exclusive.
+
+        ## Error Handling
+
+        The provided period composed of `localStartDate` and `localEndDate` must not be greater than 3 days, otherwise a `400` error response is returned with the `INVALID` error reason.
+        The provided `localEndDate` must be before the `localStartDate`, otherwise a `400` error response is returned with the `INVALID` error reason.
+        The provided `localStartDate` must be at least 1 day ahead and at most 30 days ahead than the location's current local date, otherwise a `400` error response is returned with the `INVALID` error reason.
+
+      tags:
+        - Reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1_reservation_create-reservation"
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1_reservation_get-update-reservation"
+  "/reservations/{reservationId}":
+    parameters:
+    - name: reservationId
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      operationId: user-get-reservation
+      summary: Get reservation
+      description: |-
+        ## General
+
+        Get reservation information for provided reservation id.
+
+      tags:
+        - Reservation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1_reservation_get-update-reservation"
+        default:
+          $ref: "#/components/responses/common_Error"
+    put:
+      operationId: user-update-reservation
+      summary: Update reservation
+      description: |-
+        ## General
+
+        Update reservation period for provided reservation id, where `localStartDate` is inclusive and `localEndDate` is exclusive.
+
+        ## Error Handling
+
+        The provided `id`, `email` and `name` cannot be updated, otherwise a `400` error response is returned with the `INVALID` error reason.
+        The provided period composed of `localStartDate` and `localEndDate` must not be greater than 3 days, otherwise a `400` error response is returned with the `INVALID` error reason.
+        The provided `localEndDate` must be before the `localStartDate`, otherwise a `400` error response is returned with the `INVALID` error reason.
+        The provided `localStartDate` must be at least 1 day ahead and at most 30 days ahead than the location's current local date, otherwise a `400` error response is returned with the `INVALID` error reason.
+
+      tags:
+        - Reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1_reservation_get-update-reservation"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1_reservation_get-update-reservation"
+    delete:
+        operationId: user-delete-reservation
+        summary: Delete reservation
+        description: |-
+          ## General
+
+          Delete reservation period for provided reservation id.
+
+        tags:
+          - Reservation
+        responses:
+          '204':
+            description: No Content
+          default:
+            $ref: "#/components/responses/common_Error"
+  "/availabilities":
+    get:
+      operationId: user-get-availabilities
+      summary: Get availabilities
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          required: true
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          required: false
+      description: |-
+        ## General
+
+        Returns the location availabilies for a given time period.
+
+        ## Behavior
+
+        If query parameter `endDate` is not provided, then a value of 30 days after `startDate` will be used.
+
+        ## Error Handling
+
+        The provided `endDate` must be before the `startDate`, otherwise a `400` error response is returned with the `INVALID` error reason.
+
+      tags:
+        - Reservation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1_availabilities_get-period"
+        default:
+          $ref: "#/components/responses/common_Error"
+components:
+  schemas:
+    v1_reservation_create-reservation:
+      title: User - Create Reservation
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        localStartDate:
+          type: string
+          format: date
+        localEndDate:
+          type: string
+          format: date
+      required:
+        - name
+        - email
+        - localStartDate
+        - localEndDate
+
+    v1_reservation_get-update-reservation:
+      title: User - Get/Update Reservation
+      allOf:
+        - $ref: "#/components/schemas/v1_reservation_create-reservation"
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+
+    v1_availabilities_get-period:
+      title: User - Get Availability Periods
+      type: object
+      properties:
+        periods:
+          description: List of available periods
+          type: array
+          items:
+            type: object
+            description: Available period
+            properties:
+              localStartDate:
+                type: string
+                format: date
+              localEndDate:
+                  type: string
+                  format: date
+            required:
+              - localStartDate
+              - localEndDate
+      required:
+      - periods
+
+    v1_common_error:
+      title: Error
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+
+  responses:
+    common_Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/v1_common_error"

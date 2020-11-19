@@ -1,5 +1,6 @@
 package com.borealfeast.reservation.dao;
 
+import com.borealfeast.reservation.restapi.dto.Reservation;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +12,18 @@ import java.util.function.BiConsumer;
 @Repository
 public class BookingByShortPeriodDaoFacade {
 
-    public static final int PERIOD_LENGTH = 6;
+    public static final int PERIOD_LENGTH = 1;
 
     private final BookingByShortPeriodDao bookingByShortPeriodDao;
 
     public BookingByShortPeriodDaoFacade(BookingByShortPeriodDao bookingByShortPeriodDao) {
         this.bookingByShortPeriodDao = bookingByShortPeriodDao;
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void update(AvailabilityPeriodEntity oldReservation, AvailabilityPeriodEntity newReservation) {
+        free(oldReservation);
+        reserve(newReservation);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -32,6 +39,7 @@ public class BookingByShortPeriodDaoFacade {
         bookingByShortPeriodDao.saveAll(bookingEntities.values());
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void free(AvailabilityPeriodEntity period) {
         Set<Integer> yearPeriod6s = getInvolvedYearPeriods(period);
         Map<Integer, BookingByShortPeriodEntity> bookingEntities = getBookingAsMap(yearPeriod6s);
@@ -129,6 +137,7 @@ public class BookingByShortPeriodDaoFacade {
     /**
      * Get the year and period number of a local date.
      * Ex:
+     * if PERIOD_LENGTH == 6
      * 2020-01-01 would return 202000 => 2020 + 1/6
      * 2020-04-14 where may 14th is the 135th day in a leap year would return 202022 => 2020 + 135/6
      *
@@ -136,13 +145,14 @@ public class BookingByShortPeriodDaoFacade {
      * @return
      */
     private int toYearPeriod(LocalDate localDate) {
-        return localDate.getYear() * 100
-                //Separates the year in buckets of 6 days long booking periods
+        return localDate.getYear() * 1000
+                //Separates the year in buckets of PERIOD_LENGTH days long booking periods
                 + localDate.getDayOfYear() / PERIOD_LENGTH;
     }
 
     private LocalDate toLocalDate(int yearPeriod6) {
-        int year = yearPeriod6 / 100;
-        return LocalDate.ofYearDay(year, (yearPeriod6 - (year * 100)) * PERIOD_LENGTH);
+        int year = yearPeriod6 / 1000;
+        return LocalDate.ofYearDay(year, (yearPeriod6 - (year * 1000)) * PERIOD_LENGTH);
     }
+
 }

@@ -25,6 +25,7 @@ paths:
         The provided period composed of `localStartDate` and `localEndDate` must not be greater than 3 days, otherwise a `400` error response is returned with the `INVALID` error reason.
         The provided `localEndDate` must be before the `localStartDate`, otherwise a `400` error response is returned with the `INVALID` error reason.
         The provided `localStartDate` must be at least 1 day ahead and at most 30 days ahead than the location's current local date, otherwise a `400` error response is returned with the `INVALID` error reason.
+        If an exisitng reservation overlaps the provided period, then a `409` error response is returned with the `CONFLICT` error reason.
 
       tags:
         - Reservation
@@ -80,6 +81,7 @@ paths:
         The provided period composed of `localStartDate` and `localEndDate` must not be greater than 3 days, otherwise a `400` error response is returned with the `INVALID` error reason.
         The provided `localEndDate` must be before the `localStartDate`, otherwise a `400` error response is returned with the `INVALID` error reason.
         The provided `localStartDate` must be at least 1 day ahead and at most 30 days ahead than the location's current local date, otherwise a `400` error response is returned with the `INVALID` error reason.
+        If an exisitng reservation overlaps the provided period, then a `409` error response is returned with the `CONFLICT` error reason.
 
       tags:
         - Reservation

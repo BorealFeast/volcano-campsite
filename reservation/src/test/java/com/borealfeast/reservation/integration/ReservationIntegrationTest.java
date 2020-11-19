@@ -34,6 +34,9 @@ public class ReservationIntegrationTest extends BaseIntegrationTest{
     private final static String NAME = "myName";
     private final static String EMAIL = "test@test.com";
 
+    private final static String NAME2 = "myName";
+    private final static String EMAIL2 = "test@test.com";
+
     @Autowired
     private ReservationScenario scenario;
 
@@ -73,6 +76,40 @@ public class ReservationIntegrationTest extends BaseIntegrationTest{
                 .email(EMAIL)
                 .localStartDate(coupleDaysLater())
                 .localEndDate(coupleDaysLater().plusDays(1)).build();
+        MvcResult result = scenario.createReservation(createReservation);
+
+        Reservation reservation = getResponseBody(result, Reservation.class);
+        reservation.setLocalStartDate(reservation.getLocalStartDate().plusDays(5));
+        reservation.setLocalEndDate(reservation.getLocalEndDate().plusDays(5));
+
+        result = scenario.updateReservation(reservation);
+        Assert.assertEquals(200, result.getResponse().getStatus());
+        Reservation updatedReservation = getResponseBody(result, Reservation.class);
+
+        Assert.assertEquals(reservation.getId(), updatedReservation.getId());
+        Assert.assertEquals(reservation.getEmail(), updatedReservation.getEmail());
+        Assert.assertEquals(reservation.getName(), updatedReservation.getName());
+        Assert.assertEquals(reservation.getLocalStartDate(), updatedReservation.getLocalStartDate());
+        Assert.assertEquals(reservation.getLocalEndDate(), updatedReservation.getLocalEndDate());
+    }
+
+    @Test
+    public void givenCreatedReservation_WhenCreatingSecondReservation_ThenReservationIsCreated() throws Exception {
+        LocalDate startDate = coupleDaysLater();
+        LocalDate endDate = startDate.plusDays(2);
+
+        CreateReservation createReservation = CreateReservation.builder()
+                .name(NAME)
+                .email(EMAIL)
+                .localStartDate(startDate)
+                .localEndDate(endDate).build();
+        scenario.createReservation(createReservation);
+
+        createReservation = CreateReservation.builder()
+                .name(NAME2)
+                .email(EMAIL2)
+                .localStartDate(endDate)
+                .localEndDate(endDate.plusDays(2)).build();
         MvcResult result = scenario.createReservation(createReservation);
 
         Reservation reservation = getResponseBody(result, Reservation.class);

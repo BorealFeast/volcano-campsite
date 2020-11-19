@@ -1,0 +1,6 @@
+{
+  "name": "${name}",
+  "email": "${email}",
+  "localStartDate": "${localStartDate}",
+  "localEndDate": "${localEndDate}"
+}

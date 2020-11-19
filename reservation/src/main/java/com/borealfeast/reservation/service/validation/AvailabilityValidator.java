@@ -20,7 +20,7 @@ public class AvailabilityValidator {
     public void validateAvailable(AvailabilityPeriodEntity period, List<AvailabilityPeriodEntity> currentBooking) {
         for (AvailabilityPeriodEntity booking : currentBooking) {
             if (booking.getLocalStartDate().equals(period.getLocalStartDate())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid: Requested period is not available.");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Conflict: Requested period is not available.");
             }
         }
     }

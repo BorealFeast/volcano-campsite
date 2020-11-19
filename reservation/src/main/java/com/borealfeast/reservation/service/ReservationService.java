@@ -51,9 +51,7 @@ public class ReservationService {
             return newReservation;
         }
         reservationValidator.validateUpdate(oldReservation, newReservation);
-        //TODO merge free reserve
-        availabilityService.free(oldReservation);
-        availabilityService.reserve(newReservation);
+        availabilityService.update(oldReservation, newReservation);
         reservationDao.save(reservationConverter.toReservationEntity(newReservation));
         return newReservation;
     }

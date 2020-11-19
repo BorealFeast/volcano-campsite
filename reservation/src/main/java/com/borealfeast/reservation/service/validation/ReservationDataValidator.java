@@ -77,7 +77,7 @@ public class ReservationDataValidator {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid: Cannot reserve period before : " + now.plusDays(minimumDaysInAdvance));
         }
         if (days >= maximumDaysInAdvance) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid: Cannot reserve period with more than " + maximumDaysInAdvance + " bookedPeriods in the future.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid: Cannot reserve period that is more than " + maximumDaysInAdvance + " days in the future.");
         }
     }
 

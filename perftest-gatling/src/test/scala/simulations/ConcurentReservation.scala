@@ -107,8 +107,8 @@ class ConcurentReservation extends Simulation {
   // 3 Load Scenario
   setUp(
     scnConcurentReservation.inject(
-      atOnceUsers(3),
-      constantUsersPerSec(3) during (5 seconds)
+      atOnceUsers(5),
+      constantUsersPerSec(3) during (15 seconds)
     ),
     scnGetAvailabilities.inject(
       rampUsersPerSec(600) to (800) during (15 seconds)

@@ -4,14 +4,14 @@ This is a project used to simulate a booking system for one campsite location th
 
 #### reservation
 
-The **reservation** maven module is a spring-boot projects that implements the REST api of the booking system. It also uses **posgresql** as its data store. 
+The **reservation** maven module is a spring-boot project that implements the REST api of the booking system. It also uses **posgresql** as its data store. 
 
 The api documention can be found at the following location: `reservation/src/main/resources/api/v1/reservation-api.yml`
 
 
 #### perftest-gatling
 
-**perftest-gatling** is a maven module leverages Gatling framework to perform some performance tests. 
+**perftest-gatling** is a maven module that leverages Gatling framework to perform some performance tests. 
 
 
 ## Requirements
